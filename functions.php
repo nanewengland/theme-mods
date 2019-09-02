@@ -22,6 +22,7 @@ add_filter( 'gform_pre_render_10', 'populate_posts' );
 add_filter( 'gform_pre_validation_10', 'populate_posts' );
 add_filter( 'gform_pre_submission_filter_10', 'populate_posts' );
 add_filter( 'gform_admin_pre_render_10', 'populate_posts' );
+
 function populate_posts( $form ) {
 
 
@@ -55,17 +56,19 @@ function populate_posts( $form ) {
         $serviceBodiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies");
         $serviceBodies_results = json_decode($serviceBodiesURL,true);
         foreach($serviceBodies_results as $subKey => $subArray){
-            if($subArray['name'] == 'New England Region'){
-                unset($serviceBodies_results[$subKey]);
+            if($subArray['id'] == '1' || 
+               $subArray['id'] == '16' || 
+               $subArray['id'] == '17' ||
+               $subArray['id'] == '18'){
+                 unset($serviceBodies_results[$subKey]);
             }
         }
-        asort($serviceBodies_results);
         $serviceBodies_choices = array();
 
         foreach($serviceBodies_results as $servicebody) {
             $serviceBodies_choices[] = array( 'text' => $servicebody['name'], 'value' => $servicebody['name'] );
         }
-
+		asort($serviceBodies_choices);
         // update 'Select a Post' to whatever you'd like the instructive option to be
         $fields->placeholder = 'Select a Service Body';
         $fields->choices = $serviceBodies_choices;
@@ -77,8 +80,9 @@ function populate_posts( $form ) {
             continue;
         }
 
-        $countiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetFieldValues&meeting_key=location_sub_province");
+        $countiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services[]=1&services[]=2&services[]=3&services[]=4&services[]=6&services[]=7&services[]=8&services[]=9&services[]=10&services[]=11&services[]=12&services[]=13&services[]=14&services[]=15&data_field_key=location_sub_province");
         $counties_results = json_decode($countiesURL,true);
+        $counties_results = array_unique($counties_results, SORT_REGULAR);
         $finalCountyArray = array();
         foreach($counties_results as $county){
             $finalCountyArray[] = array( 'text' => $county['location_sub_province'], 'value' => $county['location_sub_province'] );
@@ -98,7 +102,7 @@ function populate_posts( $form ) {
         }
 
 
-        $meetingsURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&sort_keys=meeting_name,service_body_bigint,weekday_tinyint,start_time");
+        $meetingsURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services[]=1&services[]=2&services[]=3&services[]=4&services[]=6&services[]=7&services[]=8&services[]=9&services[]=10&services[]=11&services[]=12&services[]=13&services[]=14&services[]=15&sort_keys=meeting_name,service_body_bigint,weekday_tinyint,start_time");
         $meetings = json_decode($meetingsURL,true);
         $days_of_the_week = [1 => "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         foreach($meetings as $meeting) {
@@ -128,6 +132,7 @@ function populate_posts( $form ) {
 add_action( 'gform_after_submission_10', 'after_submission', 10, 2 );
 
 function after_submission( $entry, $form ) {
+//var_dump($entry); PJ Testing
     foreach ( $form['fields'] as $field ) {
         $inputs = $field->get_entry_inputs();
         if ( is_array( $inputs ) ) {
@@ -144,6 +149,79 @@ function after_submission( $entry, $form ) {
     }
 }
 
-
-
+//add_filter( 'gform_pre_send_email', 'before_email' );
+//function before_email( $email ) {
+//    print_r($email);
+//}
 // end of gravity changes
+
+
+if ( ! defined('MESMERIZE_THEME_REQUIRED_PHP_VERSION')) {
+    define('MESMERIZE_THEME_REQUIRED_PHP_VERSION', '5.3.0');
+}
+
+add_action('after_switch_theme', 'mesmerize_check_php_version');
+
+function mesmerize_check_php_version()
+{
+    // Compare versions.
+    if (version_compare(phpversion(), MESMERIZE_THEME_REQUIRED_PHP_VERSION, '<')) :
+        // Theme not activated info message.
+        add_action('admin_notices', 'mesmerize_php_version_notice');
+        
+        
+        // Switch back to previous theme.
+        switch_theme(get_option('theme_switched'));
+        
+        return false;
+    endif;
+}
+
+function mesmerize_php_version_notice()
+{
+    ?>
+    <div class="notice notice-alt notice-error notice-large">
+        <h4><?php _e('Mesmerize theme activation failed!', 'mesmerize'); ?></h4>
+        <p>
+            <?php _e('You need to update your PHP version to use the <strong>Mesmerize</strong>.', 'mesmerize'); ?> <br/>
+            <?php _e('Current php version is:', 'mesmerize') ?> <strong>
+                <?php echo phpversion(); ?></strong>, <?php _e('and the minimum required version is ', 'mesmerize') ?>
+            <strong><?php echo MESMERIZE_THEME_REQUIRED_PHP_VERSION; ?></strong>
+        </p>
+    </div>
+    <?php
+}
+
+if (version_compare(phpversion(), MESMERIZE_THEME_REQUIRED_PHP_VERSION, '>=')) {
+    require_once get_template_directory() . "/inc/functions.php";
+    
+    //SKIP FREE START
+    
+    
+    
+    if ( ! defined('MESMERIZE_ONLY_FREE') || ! MESMERIZE_ONLY_FREE) {
+        // NEXT FREE VERSION
+        require_once get_template_directory() . "/inc/functions-next.php";
+        
+        // PRO HERE
+        require_once get_template_directory() . "/pro/functions.php";
+    }
+    
+    // look for an embedded child theme
+    if(! defined('MESMERIZE_CHILD_DEV') || ! MESMERIZE_CHILD_DEV){
+        add_filter('mesmerize_is_child_embedded', '__return_true');
+        mesmerize_require("child/functions.php");
+    }
+    
+    //SKIP FREE END
+    
+    if ( ! mesmerize_can_show_cached_value("mesmerize_cached_kirki_style_mesmerize")) {
+        
+        if ( ! mesmerize_skip_customize_register()) {
+            do_action("mesmerize_customize_register_options");
+        }
+    }
+    
+} else {
+    add_action('admin_notices', 'mesmerize_php_version_notice');
+}

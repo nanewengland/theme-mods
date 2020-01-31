@@ -5,7 +5,6 @@
  *
  */
 
-
 add_action( 'wp_enqueue_scripts', 'wpb_adding_scripts', 999 );
 
 add_filter("gform_pre_render_10", "monitor_dropdown");
@@ -56,11 +55,13 @@ function populate_posts( $form ) {
         $serviceBodiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies");
         $serviceBodies_results = json_decode($serviceBodiesURL,true);
         foreach($serviceBodies_results as $subKey => $subArray){
-            if($subArray['id'] == '1' || 
-               $subArray['id'] == '16' || 
-               $subArray['id'] == '17' ||
-               $subArray['id'] == '18'){
-                 unset($serviceBodies_results[$subKey]);
+            if($subArray['id'] == '1' ||
+                $subArray['id'] == '16' ||
+                $subArray['id'] == '17' ||
+                $subArray['id'] == '18' ||
+                $subArray['id'] == '19' ||
+                $subArray['id'] == '20' ){
+                unset($serviceBodies_results[$subKey]);
             }
         }
         $serviceBodies_choices = array();
@@ -68,7 +69,7 @@ function populate_posts( $form ) {
         foreach($serviceBodies_results as $servicebody) {
             $serviceBodies_choices[] = array( 'text' => $servicebody['name'], 'value' => $servicebody['name'] );
         }
-		asort($serviceBodies_choices);
+        asort($serviceBodies_choices);
         // update 'Select a Post' to whatever you'd like the instructive option to be
         $fields->placeholder = 'Select a Service Body';
         $fields->choices = $serviceBodies_choices;
@@ -149,12 +150,7 @@ function after_submission( $entry, $form ) {
     }
 }
 
-//add_filter( 'gform_pre_send_email', 'before_email' );
-//function before_email( $email ) {
-//    print_r($email);
-//}
-// end of gravity changes
-
+// Start of mesmerize specific
 
 if ( ! defined('MESMERIZE_THEME_REQUIRED_PHP_VERSION')) {
     define('MESMERIZE_THEME_REQUIRED_PHP_VERSION', '5.3.0');
@@ -168,11 +164,11 @@ function mesmerize_check_php_version()
     if (version_compare(phpversion(), MESMERIZE_THEME_REQUIRED_PHP_VERSION, '<')) :
         // Theme not activated info message.
         add_action('admin_notices', 'mesmerize_php_version_notice');
-        
-        
+
+
         // Switch back to previous theme.
         switch_theme(get_option('theme_switched'));
-        
+
         return false;
     endif;
 }
@@ -194,34 +190,32 @@ function mesmerize_php_version_notice()
 
 if (version_compare(phpversion(), MESMERIZE_THEME_REQUIRED_PHP_VERSION, '>=')) {
     require_once get_template_directory() . "/inc/functions.php";
-    
+
     //SKIP FREE START
-    
-    
-    
-    if ( ! defined('MESMERIZE_ONLY_FREE') || ! MESMERIZE_ONLY_FREE) {
-        // NEXT FREE VERSION
-        require_once get_template_directory() . "/inc/functions-next.php";
-        
-        // PRO HERE
-        require_once get_template_directory() . "/pro/functions.php";
-    }
-    
+
     // look for an embedded child theme
     if(! defined('MESMERIZE_CHILD_DEV') || ! MESMERIZE_CHILD_DEV){
         add_filter('mesmerize_is_child_embedded', '__return_true');
         mesmerize_require("child/functions.php");
     }
-    
+
+    if ( ! defined('MESMERIZE_ONLY_FREE') || ! MESMERIZE_ONLY_FREE) {
+        // NEXT FREE VERSION
+        require_once get_template_directory() . "/inc/functions-next.php";
+
+        // PRO HERE
+        require_once get_template_directory() . "/pro/functions.php";
+    }
+
     //SKIP FREE END
-    
+
     if ( ! mesmerize_can_show_cached_value("mesmerize_cached_kirki_style_mesmerize")) {
-        
+
         if ( ! mesmerize_skip_customize_register()) {
             do_action("mesmerize_customize_register_options");
         }
     }
-    
+
 } else {
     add_action('admin_notices', 'mesmerize_php_version_notice');
 }

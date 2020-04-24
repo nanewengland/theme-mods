@@ -5,6 +5,17 @@
  *
  */
 
+
+function just_add_cors_http_header($headers){
+
+    // $headers['Access-Control-Allow-Origin'] = '*';
+//
+//     return $headers;
+
+}
+
+add_action('wp_headers','just_add_cors_http_header');
+
 add_action( 'wp_enqueue_scripts', 'wpb_adding_scripts', 999 );
 
 add_filter("gform_pre_render_10", "monitor_dropdown");
@@ -82,7 +93,7 @@ function populate_posts( $form ) {
             continue;
         }
 
-        $countiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services[]=1&services[]=2&services[]=3&services[]=4&services[]=6&services[]=7&services[]=8&services[]=9&services[]=10&services[]=11&services[]=13&services[]=14&services[]=15&data_field_key=location_sub_province");
+        $countiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services=1&recursive=1&advanced_published=0&data_field_key=location_sub_province");
         $counties_results = json_decode($countiesURL,true);
         $counties_results = array_unique($counties_results, SORT_REGULAR);
         $finalCountyArray = array();
@@ -104,7 +115,7 @@ function populate_posts( $form ) {
         }
 
 
-        $meetingsURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services[]=1&services[]=2&services[]=3&services[]=4&services[]=6&services[]=7&services[]=8&services[]=9&services[]=10&services[]=11&services[]=13&services[]=14&services[]=15&sort_keys=meeting_name,service_body_bigint,weekday_tinyint,start_time");
+        $meetingsURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services=1&recursive=1&advanced_published=0&sort_keys=meeting_name,service_body_bigint,weekday_tinyint,start_time");
         $meetings = json_decode($meetingsURL,true);
         $days_of_the_week = [1 => "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         foreach($meetings as $meeting) {

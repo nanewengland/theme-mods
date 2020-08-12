@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  *
@@ -163,6 +164,7 @@ function after_submission( $entry, $form ) {
 }
 
 // Start of mesmerize specific
+
 if ( ! defined('MESMERIZE_THEME_REQUIRED_PHP_VERSION')) {
     define('MESMERIZE_THEME_REQUIRED_PHP_VERSION', '5.3.0');
 }

@@ -298,6 +298,7 @@ jQuery(document).ready(function(){
 
             jQuery("#input_10_33").val(data[0].virtual_meeting_link);
             jQuery("#input_10_34").val(data[0].phone_meeting_number);
+            jQuery("#input_10_35").val(data[0].virtual_meeting_additional_info);
             jQuery("#input_10_20").val(trainLine[1]);
             jQuery("#input_10_19").val(busLine[1]);
             jQuery("#input_10_21").val(data[0].contact_name_1);

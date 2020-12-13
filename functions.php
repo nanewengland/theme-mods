@@ -64,19 +64,13 @@ function populate_posts( $form ) {
             continue;
         }
 
-        $serviceBodiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies");
+        $serviceBodiesURL =  file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies&services=1&recursive=1");
         $serviceBodies_results = json_decode($serviceBodiesURL,true);
-        foreach($serviceBodies_results as $subKey => $subArray){
-            if($subArray['id'] == '1' ||
-                $subArray['id'] == '12' ||
-                $subArray['id'] == '16' ||
-                $subArray['id'] == '17' ||
-                $subArray['id'] == '18' ||
-                $subArray['id'] == '19' ||
-                $subArray['id'] == '20' ){
-                unset($serviceBodies_results[$subKey]);
-            }
-        }
+         foreach($serviceBodies_results as $subKey => $subArray){
+             if($subArray['id'] == '1' ){
+                 unset($serviceBodies_results[$subKey]);
+             }
+         }
         $serviceBodies_choices = array();
 
         foreach($serviceBodies_results as $servicebody) {

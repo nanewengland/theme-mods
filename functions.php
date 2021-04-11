@@ -26,7 +26,17 @@ function populate_posts( $form ) {
     $service_bodies =  json_decode(file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies&services=1&recursive=1"),true);
     $meetings = $meetings_data['meetings'];
     asort($formats);
-
+    foreach($formats as $subKey => $subArray){
+        if($subArray['key_string'] == 'HY' ){
+            unset($formats[$subKey]);
+        }
+        if($subArray['key_string'] == 'TC' ){
+            unset($formats[$subKey]);
+        }
+        if($subArray['key_string'] == 'VM' ){
+            unset($formats[$subKey]);
+        }
+    }
     $counties_array = array();
     foreach($meetings as $county){
         $counties_array[] = $county['location_sub_province'];

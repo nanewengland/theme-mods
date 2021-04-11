@@ -243,30 +243,35 @@ jQuery(document).ready(function(){
             formatsArray = data[0].format_shared_id_list.split(',');
             formatsArrayName = data[0].formats.split(',');
             formatsArrayFilterClosed = formatsArrayName.filter(e => e !== 'C');
-            formatsArrayFilter = formatsArrayFilterClosed.filter(d => d !== 'O');
-            
+            formatsArrayFilterOpen = formatsArrayFilterClosed.filter(d => d !== 'O');
+            formatsArrayFilterClosed = formatsArrayFilterOpen.filter(e => e !== 'C');
+            formatsArrayFilterOpen = formatsArrayFilterClosed.filter(d => d !== 'O');
+            formatsArrayFilterTC = formatsArrayFilterOpen.filter(d => d !== 'TC');
+            formatsArrayFilterHY = formatsArrayFilterTC.filter(d => d !== 'HY');
+            formatsArrayFilter = formatsArrayFilterHY.filter(d => d !== 'VM');
+
             // Venue Type    VM is 50 | TC is 54 | HY is 55
-			 if ( !jQuery.inArray('50', formatsArray) > -1 && !jQuery.inArray('54', formatsArray)> -1  && jQuery.inArray('55', formatsArray) > -1 ) {
+            if ( !jQuery.inArray('50', formatsArray) > -1 && !jQuery.inArray('54', formatsArray)> -1  && jQuery.inArray('55', formatsArray) > -1 ) {
                 jQuery('#choice_10_37_3').prop("checked", true);  // Hybrid (both in-person and virtual)
             }
             else if ( jQuery.inArray('50', formatsArray) > -1 && jQuery.inArray('54', formatsArray) > -1 && !jQuery.inArray('55', formatsArray) > -1 ) {
                 jQuery('#choice_10_37_2').prop("checked", true);  // Virtual (temporarily replacing an in-person)
             }
             else if ( jQuery.inArray('50', formatsArray) > -1 && !jQuery.inArray('54', formatsArray) > -1 && !jQuery.inArray('55', formatsArray) > -1 ) {
-            	jQuery('#choice_10_37_1').prop("checked", true);  // Virtual
+                jQuery('#choice_10_37_1').prop("checked", true);  // Virtual
             }
             else if ( !jQuery.inArray('50', formatsArray) > -1 && !jQuery.inArray('54', formatsArray) > -1 && !jQuery.inArray('55', formatsArray) > -1 ) {
-            	jQuery('#choice_10_37_0').prop('checked', true);  // In-Person
+                jQuery('#choice_10_37_0').prop('checked', true);  // In-Person
             }
-            
+
             // Published / Unpublished
             if  (data[0].published === "1") {
-            	jQuery('#choice_10_38_1').prop('checked', true);
+                jQuery('#choice_10_38_1').prop('checked', true);
             } else {
-            	jQuery('#choice_10_38_1').prop('checked', false);
+                jQuery('#choice_10_38_1').prop('checked', false);
             }
-            
-			
+
+
             // Closed
             if ( jQuery.inArray('4', formatsArray) > -1 ) {
                 jQuery('#choice_10_13_1').prop('checked', true);

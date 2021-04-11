@@ -22,8 +22,9 @@ add_filter( 'gform_admin_pre_render_10', 'populate_posts' );
 
 function populate_posts( $form ) {
     $meetings_data =  json_decode(file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetSearchResults&services=1&recursive=1&advanced_published=0&sort_keys=meeting_name,service_body_bigint,weekday_tinyint,start_time&get_used_formats"),true);
+    $formats = json_decode(file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetFormats&lang_enum=en"),true);
+    $service_bodies =  json_decode(file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies&services=1&recursive=1"),true);
     $meetings = $meetings_data['meetings'];
-    $formats = $meetings_data['formats'];
     asort($formats);
 
     $counties_array = array();
@@ -47,15 +48,14 @@ function populate_posts( $form ) {
             $field->choices = $format_choices;
         }
         if ( $field->type === 'select' && strpos( $field->cssClass, 'servicebody' ) === true ) {
-            $serviceBodies_results =  json_decode(file_get_contents("https://www.nerna.org/main_server/client_interface/json/?switcher=GetServiceBodies&services=1&recursive=1"),true);
-            foreach($serviceBodies_results as $subKey => $subArray){
+            foreach($service_bodies as $subKey => $subArray){
                 if($subArray['id'] == '1' ){
-                    unset($serviceBodies_results[$subKey]);
+                    unset($service_bodies[$subKey]);
                 }
             }
             $serviceBodies_choices = array();
 
-            foreach($serviceBodies_results as $servicebody) {
+            foreach($service_bodies as $servicebody) {
                 $serviceBodies_choices[] = array( 'text' => $servicebody['name'], 'value' => $servicebody['name'] );
             }
             asort($serviceBodies_choices);
@@ -71,7 +71,7 @@ function populate_posts( $form ) {
             $days_of_the_week = [1 => "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             $choices = array();
             foreach($meetings as $meeting) {
-                foreach($serviceBodies_results as $serviceBody){
+                foreach($service_bodies as $serviceBody){
                     $area_id = $serviceBody['id'];
                     if ( $area_id === $meeting['service_body_bigint'] ) {
                         $area_name = $serviceBody['name'];

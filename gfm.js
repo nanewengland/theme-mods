@@ -41,7 +41,7 @@ var militaryToStandard = function(value) {
 
 
 var getMeetingsByMeetingId = function(meetingId, callback) {
-    getJSON(baseURL + "&meeting_ids[]=" + meetingId + "&callback=?", callback);
+    getJSON(baseURL + "&advanced_published=0&meeting_ids[]=" + meetingId + "&callback=?", callback);
 };
 
 var getServiceBodies = function(callback) {
